@@ -28,13 +28,14 @@ jobs:
           required-ros-distributions: ${{ matrix.ros_distribution }}
 
       - name: Build and test
-        uses: ros-tooling/action-ros-ci@v0.3
+        uses: ros-tooling/action-ros-ci@1ff2c804b4c2383146d8cd8444dfda64ab4bf7ac  # v 0.4.3
         with:
           target-ros2-distro: ${{ matrix.ros_distribution }}
           colcon-defaults: |
             {
               "build": {
-                "merge-install": true
+                "merge-install": true,
+                "symlink-install": true
               },
               "test": {
                 "executor": "sequential",
