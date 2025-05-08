@@ -34,7 +34,7 @@ jobs:
           colcon-defaults: |
             {
               "build": {
-                "merge-install": true,
+                "merge-install": true
               },
               "test": {
                 "executor": "sequential",
