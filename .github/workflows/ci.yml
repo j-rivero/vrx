@@ -40,9 +40,10 @@ jobs:
               },
               "test": {
                 "executor": "sequential",
-                "return-code-on-test-failure": true,
                 "event-handlers": [
                   "console_direct+"
                 ]
+                "merge-install": true,
+                "return-code-on-test-failure": true,
               }
             }
