@@ -31,19 +31,18 @@ jobs:
         uses: ros-tooling/action-ros-ci@1ff2c804b4c2383146d8cd8444dfda64ab4bf7ac  # v 0.4.3
         with:
           target-ros2-distro: ${{ matrix.ros_distribution }}
-          no-symlink-install: true
+          no-symlink-install: true  # code has problems to work with symlink installations
           colcon-defaults: |
             {
               "build": {
-                "merge-install": true,
-                "symlink-install": false
+                "merge-install": true
               },
               "test": {
                 "executor": "sequential",
                 "event-handlers": [
                   "console_direct+"
-                ]
+                ],
                 "merge-install": true,
-                "return-code-on-test-failure": true,
+                "return-code-on-test-failure": true
               }
             }
