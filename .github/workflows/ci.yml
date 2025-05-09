@@ -30,7 +30,6 @@ jobs:
       - name: Build and test
         uses: ros-tooling/action-ros-ci@1ff2c804b4c2383146d8cd8444dfda64ab4bf7ac  # v 0.4.3
         with:
-          package-name: vrx_gz vrx_ros vrx_urdf
           target-ros2-distro: ${{ matrix.ros_distribution }}
           no-symlink-install: true
           colcon-defaults: |
