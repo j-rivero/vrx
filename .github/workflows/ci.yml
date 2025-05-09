@@ -11,10 +11,10 @@ jobs:
         include:
           - ros_distribution: jazzy
             ubuntu_version: jammy
-            ros_container: ghcr.io/sloretz/ros:jazzy-desktop-full
+            ros_container: ghcr.io/sloretz/ros:jazzy-desktop
 
     name: ${{ matrix.ros_distribution }}
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.ubuntu_version }}
     container: 
       image: ${{ matrix.ros_container }}
 
