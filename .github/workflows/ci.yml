@@ -11,7 +11,9 @@ jobs:
         include:
           - ros_distribution: jazzy
             ubuntu_version: 22.04
-            ros_container: ghcr.io/sloretz/ros:jazzy-desktop
+            # desktop-full provides less time spent in installing 179 pkgs with respect to desktop
+            # in exchange for using 500Mb more.
+            ros_container: ghcr.io/sloretz/ros:jazzy-desktop-full
 
     name: ${{ matrix.ros_distribution }}
     runs-on: ubuntu-${{ matrix.ubuntu_version }}
