@@ -24,4 +24,4 @@ jobs:
         uses: 0x4r45h/docker-compose-ci@2d9ea175600441004c7821462293a31c47c38fc4 # v0.1.1
         with:
           docker_compose_files: '-f docker/docker-compose.yml'
-          services: "release"
+          services: "base builder release"
