@@ -36,29 +36,30 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      # This step generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built. It increases supply chain security for people who consume the image. For more information, see [Using artifact attestations to establish provenance for builds](/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
-      # - name: Generate artifact attestation
-      #   uses: actions/attest-build-provenance@v2
-      #   with:
-      #     subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
-      #     subject-digest: ${{ steps.push.outputs.digest }}
-      #     push-to-registry: true
-      # 
-
       - name: Docker compose build and push
+        id: docker-build-push
         run: |
           cd docker
-          docker compose -f docker-compose.yml build \
-            base # builder devel
-          # tag
-          docker tag vrx-base:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base
-          # docker tag vrx-builder:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder
-          # docker tag vrx-release:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release
-          # push
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base
-          # docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder
-          # docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release
-          # TESTING push with tags
-          docker tag vrx-base:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base:${{ steps.meta.outputs.version }}
-          # docker tag vrx-builder:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder:${{ steps.meta.outputs.tags }}
-          # docker tag vrx-release:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release:${{ steps.meta.outputs.tags }}
+          # Define image types in an array
+          IMAGE_TYPES=("base" "builder" "release")
+
+          # Build images
+          docker compose -f docker-compose.yml build ${IMAGE_TYPES[@]}
+
+          # Tag and push images
+          for type in "${IMAGE_TYPES[@]}"; do
+            # Tag latest
+            docker tag vrx-${type}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${type}
+            # Push latest
+            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${type}
+
+            digest=$(docker inspect --format='{{index .RepoDigests 0}}' vrx-${type}:latest)
+            # export disgest as output variable named with the image type, one for each image
+            echo "${type}_digest=${digest}" >> $GITHUB_ENV
+          done
+      - name: Attest
+        uses: actions/attest-build-provenance@v2
+        id: attest
+        with:
+             subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base
+             subject-digest: ${{ steps.docker-build-push.outputs.base_digest }}
