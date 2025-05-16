@@ -63,9 +63,14 @@ jobs:
             # export disgest as output variable named with the image type, one for each image
             echo "${type}_digest=${digest}" >> $GITHUB_ENV
           done
+      # Print the digest of the base image from outputs
+      - name: Print base image digest
+        run: |
+          echo "Base image digest: ${{ steps.docker-build-push.outputs.base_digest }}"
+
       - name: Attest
         uses: actions/attest-build-provenance@v2
         id: attest
         with:
-             subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base
-             subject-digest: ${{ steps.docker-build-push.outputs.base_digest }}
+           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base
+           subject-digest: ${{ steps.docker-build-push.outputs.base_digest }}
