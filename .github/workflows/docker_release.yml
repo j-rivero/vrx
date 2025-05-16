@@ -48,17 +48,17 @@ jobs:
       - name: Docker compose build and push
         run: |
           cd docker
-          docker compose build -f docker-compose.yml base builder devel
+          docker compose -f docker-compose.yml build \
+            base # builder devel
           # tag
           docker tag vrx-base:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base
-          docker tag vrx-builder:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder
-          docker tag vrx-release:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release
+          # docker tag vrx-builder:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder
+          # docker tag vrx-release:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release
           # push
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release
+          # docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder
+          # docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release
           # TESTING push with tags
-          docker tag vrx-base:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base:${{ steps.meta.outputs.tags }}
-          docker tag vrx-builder:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder:${{ steps.meta.outputs.tags }}
-          docker tag vrx-release:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release:${{ steps.meta.outputs.tags }}
-
+          docker tag vrx-base:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base:${{ steps.meta.outputs.version }}
+          # docker tag vrx-builder:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder:${{ steps.meta.outputs.tags }}
+          # docker tag vrx-release:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release:${{ steps.meta.outputs.tags }}
