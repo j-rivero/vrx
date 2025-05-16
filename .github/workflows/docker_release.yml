@@ -5,7 +5,6 @@ on:
     branches: ['jrivero/release_dockerfiles']
 
 env:
-  IMAGE_REGISTRY: ghcr.io
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
@@ -46,8 +45,20 @@ jobs:
       #     push-to-registry: true
       # 
 
-      - name: publish
-        uses: 0x4r45h/docker-compose-ci@2d9ea175600441004c7821462293a31c47c38fc4 # v0.1.1
-        with:
-          docker_compose_files: '-f docker/docker-compose.yml'
-          services: "base builder release"
+      - name: Docker compose build and push
+        run: |
+          cd docker
+          docker compose build -f docker-compose.yml base builder devel
+          # tag
+          docker tag vrx-base:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base
+          docker tag vrx-builder:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder
+          docker tag vrx-release:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release
+          # push
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release
+          # TESTING push with tags
+          docker tag vrx-base:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-base:${{ steps.meta.outputs.tags }}
+          docker tag vrx-builder:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-builder:${{ steps.meta.outputs.tags }}
+          docker tag vrx-release:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-release:${{ steps.meta.outputs.tags }}
+
